@@ -1,5 +1,8 @@
+import { User2 } from 'lucide-react';
 import { ModeToggle } from './modeToggle';
 import { SidebarTrigger } from './ui/sidebar';
+import { Button } from './ui/button';
+import { ProfileDropdown } from './profileDropDown';
 
 export function AppNavbar() {
   return (
@@ -10,7 +13,17 @@ export function AppNavbar() {
           EasySLR Assignment
         </h1>
       </div>
-      <ModeToggle />
+      <div className='flex items-center gap-4'>
+        <ModeToggle />
+        <ProfileDropdown></ProfileDropdown>
+        {/* <Button
+          variant='outline'
+          size='icon'
+          className='cursor-pointer'
+        >
+          <User2></User2>
+        </Button> */}
+      </div>
     </header>
   );
 }

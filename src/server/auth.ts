@@ -22,15 +22,18 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: DefaultSession['user'] & {
       id: string;
+      profilePicture?: string;
       // ...other properties
       // role: UserRole;
     };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    profilePicture?: string | null;
+  }
 }
 
 /**
@@ -45,6 +48,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.profilePicture = user.profilePicture;
       }
       return token;
     },
@@ -53,6 +57,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.name = token.name!;
         session.user.email = token.email!;
+        session.user.profilePicture =
+          token.profilePicture as string;
       }
       return session;
     },
@@ -77,6 +83,7 @@ export const authOptions: NextAuthOptions = {
             email: true,
             password: true,
             name: true,
+            profilePicture: true,
           },
         });
 
@@ -94,6 +101,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name ?? null,
+          profilePicture: user.profilePicture,
         };
       },
     }),

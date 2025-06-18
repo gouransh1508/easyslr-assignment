@@ -222,7 +222,6 @@ export const TaskForm = ({
                       : '',
                   );
                 }}
-                initialFocus
               />
             </PopoverContent>
           </Popover>

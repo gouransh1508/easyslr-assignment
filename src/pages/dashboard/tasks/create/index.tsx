@@ -2,7 +2,7 @@
 
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
-import { TaskForm } from '../../_components/taskForm';
+import { TaskForm } from '../_components/taskForm';
 import { useRouter } from 'next/navigation';
 
 export default function CreateTaskPage() {
