@@ -6,8 +6,11 @@ import {
   type NextAuthOptions,
 } from 'next-auth';
 import { type Adapter } from 'next-auth/adapters';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { db } from '~/server/db';
+import { comparePassword } from '~/utils/hash';
+import { loginSchema } from './lib/validators/auth';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -37,16 +40,63 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.name = token.name!;
+        session.user.email = token.email!;
+      }
+      return session;
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        const creds = loginSchema.parse(credentials);
+        const user = await db.user.findUnique({
+          where: { email: creds.email },
+          select: {
+            id: true,
+            email: true,
+            password: true,
+            name: true,
+          },
+        });
+
+        if (
+          !user ||
+          !(await comparePassword(
+            creds.password,
+            user.password ?? '',
+          ))
+        ) {
+          throw new Error('Invalid email or password');
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name ?? null,
+        };
+      },
+    }),
     /**
      * ...add more providers here.
      *
@@ -57,6 +107,9 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  pages: {
+    signIn: '/auth/login',
+  },
 };
 
 /**

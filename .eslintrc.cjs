@@ -4,11 +4,19 @@ const config = {
   parserOptions: {
     project: true,
   },
+  ignorePatterns: [
+    '.github/',
+    '.husky/',
+    'node_modules/',
+    '.next/',
+    'src/components/ui',
+    '*.config.ts',
+    '*.mjs',
+  ],
   plugins: [
     '@typescript-eslint',
     'prettier',
     'import',
-    'unicorn',
     'react',
     'sonarjs',
   ],
@@ -21,7 +29,12 @@ const config = {
     'plugin:react/recommended',
   ],
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     '@typescript-eslint/array-type': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/consistent-type-imports': [

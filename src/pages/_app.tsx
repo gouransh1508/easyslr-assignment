@@ -8,6 +8,7 @@ import { type AppType } from 'next/app';
 import { api } from '~/utils/api';
 
 import '~/styles/globals.css';
+import { Toaster } from 'sonner';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -17,6 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <div className={GeistSans.className}>
         <Component {...pageProps} />
+        <Toaster></Toaster>
       </div>
     </SessionProvider>
   );
