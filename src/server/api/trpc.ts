@@ -7,14 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
-import superjson from "superjson";
-import { ZodError } from "zod";
+import { initTRPC, TRPCError } from '@trpc/server';
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { type Session } from 'next-auth';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
 
-import { getServerAuthSession } from "~/server/auth";
-import { db } from "~/server/db";
+import { getServerAuthSession } from '~/server/auth';
+import { db } from '~/server/db';
 
 /**
  * 1. CONTEXT
@@ -38,7 +38,9 @@ interface CreateContextOptions {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+const createInnerTRPCContext = (
+  opts: CreateContextOptions,
+) => {
   return {
     session: opts.session,
     db,
@@ -51,7 +53,9 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+export const createTRPCContext = async (
+  opts: CreateNextContextOptions,
+) => {
   const { req, res } = opts;
 
   // Get the session from the server using the getServerSession wrapper function
@@ -70,19 +74,23 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * errors on the backend.
  */
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
-});
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.cause instanceof ZodError
+              ? error.cause.flatten()
+              : null,
+        },
+      };
+    },
+  });
 
 /**
  * Create a server-side caller.
@@ -111,22 +119,28 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
-const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
+const timingMiddleware = t.middleware(
+  async ({ next, path }) => {
+    const start = Date.now();
 
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
+    if (t._config.isDev) {
+      // artificial delay in dev
+      const waitMs = Math.floor(Math.random() * 400) + 100;
+      await new Promise((resolve) =>
+        setTimeout(resolve, waitMs),
+      );
+    }
 
-  const result = await next();
+    const result = await next();
 
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
+    const end = Date.now();
+    console.log(
+      `[TRPC] ${path} took ${end - start}ms to execute`,
+    );
 
-  return result;
-});
+    return result;
+  },
+);
 
 /**
  * Public (unauthenticated) procedure
@@ -135,7 +149,9 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure.use(timingMiddleware);
+export const publicProcedure = t.procedure.use(
+  timingMiddleware,
+);
 
 /**
  * Protected (authenticated) procedure
@@ -149,7 +165,7 @@ export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
       ctx: {
