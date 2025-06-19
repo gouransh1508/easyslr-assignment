@@ -1,29 +1,159 @@
-# Create T3 App
+# EasySLR Assignment Submission By Gouransh Sachdeva
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+# 🛠️ Project Management Tool
 
-## What's next? How do I make an app with this?
+A Kanban-style project management application built using the **T3 Stack** (Next.js + tRPC + Prisma + TailwindCSS), with support for email/password authentication via **NextAuth** and Supabase storage integration for profile uploads. Inspired by tools like Jira and Trello.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+---
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 🚀 Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Frontend**: Next.js with TypeScript, React, TailwindCSS, ShadCN, Lucide
+- **Backend**: tRPC, Prisma ORM, PostgreSQL
+- **Auth**: NextAuth.js (Email + Password via Credentials Provider)
+- **Storage**: Supabase (for user profile pictures)
+- **State & Data Fetching**: React Query, Context API
+- **Drag & Drop**: DnD Kit (for Kanban board)
+- **Form Validation**: Zod, React Hook Form
+- **Notifications**: Sonner Toasts
 
-## Learn More
+---
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## 📦 Features
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- 🔐 User authentication via **NextAuth (email/password)**
+- 🧑 User profile with **bio, profile picture**, and editable info
+- 📁 CRUD for **Projects**, with creator-based access control
+- ✅ Each Project has **statuses** (To Do, In Progress, Done) — Kanban-style
+- 📝 Create/edit/delete **Tasks**, assign them to users
+- 🧩 Drag & drop Tasks between Statuses
+- 📊 Task metadata includes: `title`, `description`, `priority`, `tag`, `deadline`, `assignee`
+- 🔄 Optimistic updates for moving tasks across statuses
+- ⚠️ Route protection via session checks in client layout
+- 📤 Profile picture upload using **Supabase Storage**
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+---
 
-## How do I deploy this?
+## 🏗️ Project Structure
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+```
+/
+├── prisma/                   # Prisma schema and migrations
+├── src/
+│   ├── pages/               # Page Router structure
+│   ├── server/
+│   │   └── api/             # tRPC routers
+│   ├── components/          # UI Components (Navbar, Sidebar, Breadcrumbs, etc.)
+│   ├── utils/               # API utils, helper functions
+│   ├── features/            # Feature-specific UI like TaskForm, ProjectForm
+├── public/                  # Static assets
+├── styles/                  # Tailwind styles
+├── .env                     # Environment variables
+├── next.config.js
+└── README.md
+```
+
+---
+
+## 🧪 Testing Strategy
+
+> Basic integration tested via manual QA for now. End-to-end testing and unit tests can be added with Playwright or Vitest in the future.
+
+**Manual QA:**
+
+- ✅ Auth flow (register, login, logout)
+- ✅ CRUD operations for projects and tasks
+- ✅ Drag & drop with visual updates
+- ✅ Profile updates including image upload
+
+---
+
+## 🛡️ Route Protection (Client-Side)
+
+- Protected routes (like `/dashboard`) use session checks inside layouts.
+- If a user is unauthenticated, they are redirected to `/`.
+
+```tsx
+useEffect(() => {
+  if (status === 'unauthenticated') {
+    router.push('/');
+  }
+}, [status]);
+```
+
+> Note: Middleware-based protection was explored but avoided due to Page Router limitations and redirect issues.
+
+---
+
+## 🧪 Prisma Schema Overview
+
+- `User`: Auth & profile data
+- `Project`: Has multiple `Status`, created by `User`
+- `Status`: Kanban column, belongs to one `Project`
+- `Task`: Belongs to one `Project` and one `Status`, with full metadata
+- Auth-related models: `Account`, `Session`, `VerificationToken` (for NextAuth)
+
+---
+
+## 🧑‍💻 Developer Setup
+
+1. **Clone the Repo**
+
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Setup .env**
+   ```env
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+   NEXTAUTH_SECRET=your-secret
+   NEXTAUTH_URL=http://localhost:3000
+   SUPABASE_PROJECT_URL=https://xyz.supabase.co
+   SUPABASE_ANON_KEY=your-public-anon-key
+   ```
+
+4. **Run Migrations**
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+5. **Run the App**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🧩 Deployment Instructions
+
+We recommend deploying on **Vercel**:
+
+1. Connect the GitHub repo
+2. Set environment variables in the dashboard
+3. Add your **PostgreSQL** and **Supabase** credentials
+4. Set the `DATABASE_URL`, `NEXTAUTH_SECRET`, etc.
+5. Deploy!
+
+**Other Options**:
+- Railway or Render for backend DB
+- Supabase for storage
+- Cloudflare Images for CDN
+
+---
+
+## 🧠 Future Improvements
+
+- ✅ Server-side redirects via middleware (once App Router is adopted)
+- 🔄 Reordering within same column (DnD sortable)
+- 🔍 Filters for assignees, priority, tag
+- 📆 Calendar view for task deadlines
+- 📊 Dashboard metrics and charts
+- 🔔 Email notifications
+
+---
+
+## 🤝 Thanks, Looking forward for your review.
+
+
