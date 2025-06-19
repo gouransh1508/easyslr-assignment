@@ -1,8 +1,13 @@
+// lib/prisma.ts
 import { PrismaClient } from '@prisma/client';
-
 import { env } from '~/env';
 
-const createPrismaClient = () =>
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+const prisma =
+  globalForPrisma.prisma ??
   new PrismaClient({
     log:
       env.NODE_ENV === 'development'
@@ -10,12 +15,9 @@ const createPrismaClient = () =>
         : ['error'],
   });
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createPrismaClient> | undefined;
-};
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+if (!globalForPrisma.prisma) {
+  globalForPrisma.prisma = prisma;
+}
 
-export const db =
-  globalForPrisma.prisma ?? createPrismaClient();
-
-if (env.NODE_ENV !== 'production')
-  globalForPrisma.prisma = db;
+export const db = prisma;
