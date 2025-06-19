@@ -1,4 +1,10 @@
-import { ListCheck, ListTodo, UserPen } from 'lucide-react';
+import {
+  FolderKanban,
+  FolderPlus,
+  ListCheck,
+  ListTodo,
+  UserPen,
+} from 'lucide-react';
 
 import {
   Sidebar,
@@ -21,12 +27,12 @@ export function AppSidebar() {
         {
           title: 'View All Projects',
           url: '/dashboard/projects',
-          icon: ListTodo,
+          icon: FolderKanban,
         },
         {
           title: 'Create Project',
           url: '/dashboard/projects/create',
-          icon: ListCheck,
+          icon: FolderPlus,
         },
       ],
     },

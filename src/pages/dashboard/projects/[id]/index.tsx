@@ -26,9 +26,11 @@ import { BoardView } from './_component/boardView';
 import { Button } from '~/components/ui/button';
 
 export default function ProjectHomePage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string | undefined;
+
   const router = useRouter();
-  const projectId = id as string;
+  const projectId = id!;
 
   const { data, isLoading } =
     api.tasks.listByProject.useQuery({ projectId });

@@ -1,7 +1,12 @@
-import { type ReactNode } from 'react';
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, type ReactNode } from 'react';
 import { AppNavbar } from '~/components/appNavbar';
 import { AppSidebar } from '~/components/appSidebar';
 import { Breadcrumbs } from '~/components/breadcrumbs';
+import { FullScreenLoader } from '~/components/loader';
 import { SidebarProvider } from '~/components/ui/sidebar';
 
 export default function DashboardLayout({
@@ -9,6 +14,23 @@ export default function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/');
+    }
+  }, [status, router]);
+
+  if (status === 'unauthenticated') {
+    return null;
+  }
+
+  if (status === 'loading') {
+    return <FullScreenLoader></FullScreenLoader>;
+  }
+
   return (
     <div className='flex h-screen'>
       <SidebarProvider>

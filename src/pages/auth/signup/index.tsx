@@ -1,4 +1,3 @@
-// src/pages/signup.tsx
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -40,7 +39,7 @@ export default function SignupPage() {
       await signIn('credentials', {
         email: data.email,
         password: data.password,
-        callbackUrl: '/dashboard',
+        callbackUrl: '/dashboard/projects',
       });
     },
     onError: (err) => {

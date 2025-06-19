@@ -13,6 +13,9 @@ import {
 } from '~/components/ui/pagination';
 import { api } from '~/utils/api';
 import { EmptyState } from '~/components/emptyState';
+import { Badge } from '~/components/ui/badge';
+import Link from 'next/link';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -63,40 +66,56 @@ export default function TaskListPage() {
               href='/dashboard/tasks/create'
             />
           ) : (
-            <div className='space-y-4'>
+            <div className='flex flex-col gap-4'>
               {data?.tasks?.map((task) => (
-                <Card
+                <Link
                   key={task.id}
-                  className='cursor-pointer transition hover:shadow-xl'
-                  onClick={() =>
-                    router.push(
-                      `/dashboard/tasks/edit/${task.id}`,
-                    )
-                  }
+                  href={`/dashboard/tasks/edit/${task.id}`}
                 >
-                  <CardContent className='space-y-2 p-4'>
-                    <div className='flex items-center justify-between'>
-                      <h2 className='text-xl font-semibold'>
-                        {task.title}
-                      </h2>
-                      <span className='text-sm text-gray-500'>
-                        {task.priority}
-                      </span>
-                    </div>
-                    <p className='truncate text-sm text-gray-700'>
-                      {task.description}
-                    </p>
-                    <div className='flex justify-between text-xs text-gray-500'>
-                      <span>Tag: {task.tag}</span>
-                      <span>
-                        Deadline:{' '}
-                        {new Date(
-                          task.deadline,
-                        ).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Card className='cursor-pointer transition hover:shadow-xl'>
+                    <CardContent className='space-y-2 p-4'>
+                      <div className='flex items-center justify-between'>
+                        <h2 className='text-xl font-semibold'>
+                          {task.title}
+                        </h2>
+                        <div className='flex flex-row items-center gap-2 md:flex-row'>
+                          <Badge variant={'outline'}>
+                            {task.priority}
+                          </Badge>
+                          <span>
+                            <Link
+                              href={`/dashboard/projects/${task.project.id}`}
+                              className='flex cursor-pointer items-center gap-2 text-sm text-blue-400'
+                            >
+                              {task.project.name}
+                              <SquareArrowOutUpRight
+                                size={16}
+                              ></SquareArrowOutUpRight>
+                            </Link>
+                          </span>
+                        </div>
+                      </div>
+                      <p className='truncate text-sm text-gray-700'>
+                        {task.description}
+                      </p>
+                      <div className='flex justify-between text-xs text-gray-500'>
+                        <span>Tag: {task.tag}</span>
+                        <div className='flex flex-row gap-2 md:flex-row'>
+                          <span>
+                            Deadline:{' '}
+                            {new Date(
+                              task.deadline,
+                            ).toLocaleDateString()}
+                          </span>
+                          <span>
+                            Created By:{' '}
+                            {task.createdBy.name}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}

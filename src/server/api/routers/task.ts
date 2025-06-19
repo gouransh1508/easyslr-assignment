@@ -77,6 +77,20 @@ export const tasksRouter = createTRPCRouter({
             orderBy: { createdAt: 'desc' },
             skip,
             take: limit,
+            include: {
+              project: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              createdBy: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
           }),
           db.task.count(),
         ]);

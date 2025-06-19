@@ -97,11 +97,11 @@ export const ProjectForm = ({
         </div>
 
         {/* Submit */}
-        <div className='pt-2'>
+        <div className='flex justify-center pt-2'>
           <Button
             type='submit'
             disabled={isSubmitting}
-            className='w-full transition-all duration-200 hover:shadow-lg'
+            className='transition-all duration-200 hover:shadow-lg'
           >
             {isSubmitting ? 'Saving...' : 'Save Project'}
           </Button>

@@ -3,10 +3,19 @@
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
 import { TaskForm } from '../_components/taskForm';
-import { useRouter } from 'next/navigation';
+import {
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 
 export default function CreateTaskPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Extract query params
+  const projectId = searchParams.get('projectId');
+  const statusId = searchParams.get('statusId');
+
   const utils = api.useUtils();
 
   const create = api.tasks.create.useMutation({
@@ -27,6 +36,10 @@ export default function CreateTaskPage() {
         Create Task
       </h1>
       <TaskForm
+        defaultValues={{
+          projectId: projectId ?? '',
+          statusId: statusId ?? '',
+        }}
         onSubmit={(data) => create.mutate(data)}
         isSubmitting={create.isPending}
       />

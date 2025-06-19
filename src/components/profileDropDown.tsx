@@ -71,7 +71,12 @@ export function ProfileDropdown({
           </span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem
+          onClick={async () => {
+            await signOut();
+            await router.push('/');
+          }}
+        >
           <LogOut className='mr-2 h-4 w-4' />
           <span className='cursor-pointer text-xs font-bold'>
             Logout

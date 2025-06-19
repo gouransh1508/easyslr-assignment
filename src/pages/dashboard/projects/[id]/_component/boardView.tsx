@@ -4,20 +4,26 @@ import {
   DndContext,
   closestCorners,
   type DragEndEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
+  useSortable,
 } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { type Status, type Task } from '@prisma/client';
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
+import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,
   CardTitle,
 } from '~/components/ui/card';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
 export function BoardView({
   tasks: initialTasks,
@@ -31,7 +37,7 @@ export function BoardView({
   const utils = api.useUtils();
   const updateStatus = api.tasks.updateStatus.useMutation({
     onSuccess: () => {
-      void utils.tasks.invalidate(); // or the specific list query
+      void utils.tasks.invalidate();
       toast.success('Task moved successfully!');
     },
     onError: () => {
@@ -43,10 +49,22 @@ export function BoardView({
     const { active, over } = event;
     if (!over) return;
 
-    console.log('dargendddd');
-
     const taskId = active.id.toString();
-    const newStatusId = over.id.toString();
+
+    const overContainer = document.querySelector(
+      `[data-status-column-id="${over.id}"]`,
+    );
+
+    const columnElement = overContainer?.closest(
+      '[data-status-column-id]',
+    );
+
+    if (!columnElement) return;
+
+    const newStatusId = columnElement.getAttribute(
+      'data-status-column-id',
+    );
+    if (!newStatusId) return;
 
     const task = tasks.find((t) => t.id === taskId);
     if (!task || task.statusId === newStatusId) return;
@@ -59,7 +77,13 @@ export function BoardView({
       ),
     );
 
-    updateStatus.mutate({ taskId, statusId: newStatusId });
+    // Delay for smoother transition
+    setTimeout(() => {
+      updateStatus.mutate({
+        taskId,
+        statusId: newStatusId,
+      });
+    }, 150);
   };
 
   return (
@@ -69,92 +93,109 @@ export function BoardView({
     >
       <div className='grid grid-cols-1 gap-4 md:grid-cols-5'>
         {statuses.map((status) => (
-          <SortableContext
-            key={status.id}
-            items={tasks
-              .filter((t) => t.statusId === status.id)
-              .map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <Card className='rounded-lg bg-muted p-2'>
-              <CardTitle className='mb-4 flex items-center justify-between gap-2'>
-                {status.name}
-                <Button
-                  variant='outline'
-                  size={'icon'}
-                  className='flex items-center gap-2'
-                >
-                  <Plus></Plus>
-                </Button>
-              </CardTitle>
-              <CardContent className='p-0'>
-                <div className='min-h-[300px] space-y-2'>
-                  {tasks.filter(
-                    (task) => task.statusId === status.id,
-                  ).length === 0 ? (
-                    <div className='rounded border bg-background px-3 py-2 text-sm italic text-muted-foreground'>
-                      No tasks yet
-                    </div>
-                  ) : (
-                    tasks
-                      .filter(
-                        (task) =>
-                          task.statusId === status.id,
-                      )
-                      .map((task) => (
-                        <DraggableCard
-                          key={task.id}
-                          task={task}
-                        />
-                      ))
-                  )}
+          <DroppableColumn key={status.id} status={status}>
+            <SortableContext
+              items={tasks
+                .filter((t) => t.statusId === status.id)
+                .map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {tasks.filter((t) => t.statusId === status.id)
+                .length === 0 ? (
+                <div className='rounded border bg-background px-3 py-2 text-sm italic text-muted-foreground'>
+                  No tasks yet
                 </div>
-              </CardContent>
-            </Card>
-          </SortableContext>
+              ) : (
+                tasks
+                  .filter((t) => t.statusId === status.id)
+                  .map((task) => (
+                    <DraggableCard
+                      key={task.id}
+                      task={task}
+                    />
+                  ))
+              )}
+            </SortableContext>
+          </DroppableColumn>
         ))}
       </div>
     </DndContext>
   );
 }
 
-import { useDraggable } from '@dnd-kit/core';
-import { Plus } from 'lucide-react';
-import { Button } from '~/components/ui/button';
-
-function DraggableCard({ task }: { task: Task }) {
-  const { attributes, listeners, setNodeRef, transform } =
-    useDraggable({ id: task.id });
-
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
+function DroppableColumn({
+  status,
+  children,
+}: {
+  status: Status;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef } = useDroppable({ id: status.id });
 
   return (
     <Card
       ref={setNodeRef}
-      style={style}
-      className='cursor-move space-y-2 bg-card p-3 shadow-xl'
-      {...listeners}
-      {...attributes}
+      className='rounded-lg bg-muted p-2'
+      data-status-column-id={status.id}
     >
-      <CardTitle className='flex justify-between gap-2'>
-        {task.title}
-        <span className='text-sm text-gray-500'>
-          {task.priority}
-        </span>
+      <CardTitle className='mb-4 flex items-center justify-between gap-2'>
+        {status.name}
+        <Link
+          href={`/dashboard/tasks/create?projectId=${status.projectId}&statusId=${status.id}`}
+        >
+          <Button variant='outline' size='icon'>
+            <Plus />
+          </Button>
+        </Link>
       </CardTitle>
-      <p>{task.description}</p>
-      <div className={'flex justify-between'}>
-        <span className='text-sm text-gray-500'>
-          {task.tag}
-        </span>
-        <span className='text-sm text-red-300'>
-          {new Date(task.deadline).toLocaleDateString()}
-        </span>
-      </div>
+      <CardContent className='p-0'>
+        <div className='min-h-[300px] space-y-2'>
+          {children}
+        </div>
+      </CardContent>
     </Card>
+  );
+}
+
+function DraggableCard({ task }: { task: Task }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <Link href={`/dashboard/tasks/edit/${task.id}`}>
+      <Card
+        ref={setNodeRef}
+        style={style}
+        className='cursor-move space-y-2 bg-card p-3 shadow-xl'
+        {...listeners}
+        {...attributes}
+      >
+        <CardTitle className='flex justify-between gap-2'>
+          {task.title}
+          <span className='text-sm text-gray-500'>
+            {task.priority}
+          </span>
+        </CardTitle>
+        <p>{task.description}</p>
+        <div className='flex justify-between'>
+          <span className='text-sm text-gray-500'>
+            {task.tag}
+          </span>
+          <span className='text-sm text-red-300'>
+            {new Date(task.deadline).toLocaleDateString()}
+          </span>
+        </div>
+      </Card>
+    </Link>
   );
 }
