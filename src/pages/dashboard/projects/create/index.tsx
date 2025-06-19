@@ -3,7 +3,7 @@
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { ProjectForm } from '../_components/projectForm';
+import ProjectForm from '../_components/projectForm';
 
 export default function CreateProjectPage() {
   const router = useRouter();

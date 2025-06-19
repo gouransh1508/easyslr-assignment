@@ -2,11 +2,11 @@
 
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
-import { TaskForm } from '../_components/taskForm';
 import {
   useRouter,
   useSearchParams,
 } from 'next/navigation';
+import TaskForm from '../_components/taskForm';
 
 export default function CreateTaskPage() {
   const router = useRouter();

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { useRouter as useNavigationRouter } from 'next/navigation';
 import { FullScreenLoader } from '~/components/loader';
-import { ProjectForm } from '../../_components/projectForm';
+import ProjectForm from '../../_components/projectForm';
 
 export default function EditProjectPage() {
   const router = useRouter();

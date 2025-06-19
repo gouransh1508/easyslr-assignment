@@ -22,8 +22,8 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '~/components/ui/skeleton';
 import { api } from '~/utils/api';
-import { BoardView } from './_component/boardView';
 import { Button } from '~/components/ui/button';
+import BoardView from './_component/boardView';
 
 export default function ProjectHomePage() {
   const params = useParams();

@@ -3,10 +3,10 @@
 import { useEffect } from 'react';
 import { api } from '~/utils/api';
 import { toast } from 'sonner';
-import { TaskForm } from '~/pages/dashboard/tasks/_components/taskForm';
 import { useRouter } from 'next/router';
 import { useRouter as useNavigationRouter } from 'next/navigation';
 import { FullScreenLoader } from '~/components/loader';
+import TaskForm from '../../_components/taskForm';
 
 export default function EditTaskPage() {
   const router = useRouter();

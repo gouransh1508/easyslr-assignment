@@ -1,9 +1,9 @@
 import { api } from '~/utils/api';
-import { UserProfileForm } from '../_components/profileForm';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { FullScreenLoader } from '~/components/loader';
 import { useEffect } from 'react';
+import UserProfileForm from '../_components/profileForm';
 
 export default function ProfilePage() {
   const session = useSession();

@@ -26,7 +26,7 @@ type ProjectFormProps = {
   isSubmitting?: boolean;
 };
 
-export const ProjectForm = ({
+const ProjectForm = ({
   defaultValues,
   onSubmit,
   isSubmitting,
@@ -110,3 +110,5 @@ export const ProjectForm = ({
     </TooltipProvider>
   );
 };
+
+export default ProjectForm;

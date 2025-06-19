@@ -39,7 +39,7 @@ export default function Home() {
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
             <Link
               className='flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href='https://create.t3.gg/en/usage/first-steps'
+              href='https://github.com/gouransh1508/easyslr-assignment'
               target='_blank'
             >
               <h3 className='text-2xl font-bold'>
@@ -52,7 +52,7 @@ export default function Home() {
             </Link>
             <Link
               className='flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href='https://create.t3.gg/en/introduction'
+              href='https://github.com/gouransh1508/easyslr-assignment#easyslr-assignment-submission-by-gouransh-sachdeva'
               target='_blank'
             >
               <h3 className='text-2xl font-bold'>

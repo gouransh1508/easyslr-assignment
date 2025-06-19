@@ -45,7 +45,7 @@ type TaskFormProps = {
   isSubmitting?: boolean;
 };
 
-export const TaskForm = ({
+const TaskForm = ({
   defaultValues,
   onSubmit,
   isSubmitting,
@@ -367,3 +367,5 @@ export const TaskForm = ({
     </TooltipProvider>
   );
 };
+
+export default TaskForm;

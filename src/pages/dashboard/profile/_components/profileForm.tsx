@@ -32,7 +32,7 @@ type Props = {
   isSubmitting?: boolean;
 };
 
-export function UserProfileForm({
+function UserProfileForm({
   defaultValues,
   onSubmit,
   isSubmitting,
@@ -172,3 +172,5 @@ export function UserProfileForm({
     </div>
   );
 }
+
+export default UserProfileForm;

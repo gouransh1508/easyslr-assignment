@@ -25,7 +25,7 @@ import {
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
-export function BoardView({
+export default function BoardView({
   tasks: initialTasks,
   statuses,
 }: {

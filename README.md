@@ -1,6 +1,6 @@
 # EasySLR Assignment Submission By Gouransh Sachdeva
 
-# 🛠️ Project Management Tool
+# 🛠️ Task Management Tool
 
 A Kanban-style project management application built using the **T3 Stack** (Next.js + tRPC + Prisma + TailwindCSS), with support for email/password authentication via **NextAuth** and Supabase storage integration for profile uploads. Inspired by tools like Jira and Trello.
 
@@ -126,22 +126,19 @@ useEffect(() => {
 
 ---
 
-## 🧩 Deployment Instructions
+## 🧩 Deployment 
 
-We recommend deploying on **Vercel**:
+## 🚀 Deployment Notes
 
-1. Connect the GitHub repo
-2. Set environment variables in the dashboard
-3. Add your **PostgreSQL** and **Supabase** credentials
-4. Set the `DATABASE_URL`, `NEXTAUTH_SECRET`, etc.
-5. Deploy!
+Deployment was initially attempted using ** SST**, but it encountered issues during the T3 initialization process.
 
-**Other Options**:
-- Railway or Render for backend DB
-- Supabase for storage
-- Cloudflare Images for CDN
+![T3 Initialization Error](./public/ss/SST%20Issue.png)
+
+> ⚠️ If you'd like this resolved or would like to access definate SST deployment for this task, feel free to [create an issue](https://github.com/gouransh1508/easyslr-assignment/issues) — I'd be happy to work on it!
 
 ---
+
+
 
 ## 🧠 Future Improvements
 
