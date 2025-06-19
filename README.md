@@ -40,7 +40,7 @@ A Kanban-style project management application built using the **T3 Stack** (Next
 
 ```
 /
-├── prisma/                   # Prisma schema and migrations
+├── prisma/                  # Prisma schema and migrations
 ├── src/
 │   ├── pages/               # Page Router structure
 │   ├── server/

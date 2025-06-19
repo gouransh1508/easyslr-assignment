@@ -39,6 +39,8 @@ export default function LoginPage() {
       redirect: false,
     });
 
+    console.log(res, 'resresTest');
+
     if (res?.ok) {
       toast.success('Logged in successfully');
       await router.push('/dashboard/projects');
