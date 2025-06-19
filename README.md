@@ -2,6 +2,9 @@
 
 ##### Demo URL: https://easyslr-assignment.vercel.app/
 
+[Demo Video](https://www.loom.com/share/d02e760f98ce44519981a1f34a7692fc?sid=7e41d732-6812-411a-b705-d1ad2f6bdb8b)
+
+
 # 🛠️ Task Management Tool
 
 A Kanban-style project management application built using the **T3 Stack** (Next.js + tRPC + Prisma + TailwindCSS), with support for email/password authentication via **NextAuth** and Supabase storage integration for profile uploads. Inspired by tools like Jira and Trello.
