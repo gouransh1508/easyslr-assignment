@@ -1,5 +1,7 @@
 # EasySLR Assignment Submission By Gouransh Sachdeva
 
+##### Demo URL: https://easyslr-assignment.vercel.app/
+
 # 🛠️ Task Management Tool
 
 A Kanban-style project management application built using the **T3 Stack** (Next.js + tRPC + Prisma + TailwindCSS), with support for email/password authentication via **NextAuth** and Supabase storage integration for profile uploads. Inspired by tools like Jira and Trello.
@@ -126,11 +128,9 @@ useEffect(() => {
 
 ---
 
-## 🧩 Deployment 
-
 ## 🚀 Deployment Notes
 
-Deployment was initially attempted using ** SST**, but it encountered issues during the T3 initialization process.
+Deployment was initially attempted using **SST**, but it encountered many OS issues during the T3 initialization, probably some issue with my system.
 
 ![T3 Initialization Error](./public/ss/SST%20Issue.png)
 

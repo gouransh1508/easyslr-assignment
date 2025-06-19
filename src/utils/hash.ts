@@ -1,5 +1,5 @@
 // utils/hash.ts
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const hashPassword = (password: string) =>
   bcrypt.hash(password, 10);
