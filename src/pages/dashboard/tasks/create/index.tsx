@@ -23,6 +23,8 @@ export default function CreateTaskPage() {
       toast.success('Task created');
       void utils.tasks.list.invalidate();
       void utils.tasks.invalidate();
+      void utils.project.invalidate();
+      void utils.project.list.invalidate();
       router.push('/dashboard/tasks');
     },
     onError: (err) => {
