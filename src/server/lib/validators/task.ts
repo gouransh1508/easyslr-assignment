@@ -7,4 +7,6 @@ export const taskSchema = z.object({
   tag: z.enum(['Feature', 'Bug', 'Improvement']),
   deadline: z.string().min(1, 'Deadlien is required'),
   assignee: z.string().min(1, 'Assignee is required'),
+  projectId: z.string().min(1, 'ProjectId is required'),
+  statusId: z.string().min(1, 'StatusId is required'),
 });

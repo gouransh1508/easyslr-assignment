@@ -34,6 +34,8 @@ import { format } from 'date-fns';
 import { Calendar } from '~/components/ui/calendar';
 
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { api } from '~/utils/api';
 
 type TaskFormValues = z.infer<typeof taskSchema>;
 
@@ -48,6 +50,32 @@ export const TaskForm = ({
   onSubmit,
   isSubmitting,
 }: TaskFormProps) => {
+  const params = useParams();
+  const projectIdFromParams = params?.projectId as
+    | string
+    | undefined;
+  const statusIdFromParams = params?.statusId as
+    | string
+    | undefined;
+
+  const { data: projects = [] } =
+    api.project.getAllProjects.useQuery();
+
+  const [selectedProject, setSelectedProject] = useState(
+    defaultValues?.projectId ?? projectIdFromParams ?? '',
+  );
+
+  const { data: statuses = [] } =
+    api.status.getStatusesByProject.useQuery(
+      { projectId: selectedProject },
+      {
+        enabled: !!selectedProject,
+      },
+    );
+
+  const { data: users = [] } =
+    api.user.getAllUsers.useQuery();
+
   const {
     register,
     handleSubmit,
@@ -56,7 +84,15 @@ export const TaskForm = ({
     formState: { errors },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      projectId:
+        defaultValues?.projectId ??
+        projectIdFromParams ??
+        '',
+      statusId:
+        defaultValues?.statusId ?? statusIdFromParams ?? '',
+    },
   });
 
   const deadline = watch('deadline');
@@ -72,10 +108,102 @@ export const TaskForm = ({
     <TooltipProvider>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className='space-y-6 rounded-2xl border bg-background p-8 shadow-lg dark:border-zinc-800'
+        className='grid grid-cols-3 gap-8 rounded-2xl border bg-background p-8 shadow-lg dark:border-zinc-800'
       >
-        {/* Title */}
+        {/* Project Selection */}
         <div className='space-y-2'>
+          <Label htmlFor='project'>Project</Label>
+          <Select
+            value={watch('projectId')}
+            onValueChange={(val) => {
+              setValue('projectId', val);
+              setSelectedProject(val);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Select Project' />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map((project) => (
+                <SelectItem
+                  key={project.id}
+                  value={project.id}
+                >
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Status Selection */}
+        <div className='space-y-2'>
+          <Label htmlFor='status'>Status</Label>
+          <Select
+            value={watch('statusId')}
+            onValueChange={(val) =>
+              setValue('statusId', val)
+            }
+            disabled={!statuses.length}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Select Status' />
+            </SelectTrigger>
+            <SelectContent>
+              {statuses.map((status) => (
+                <SelectItem
+                  key={status.id}
+                  value={status.id}
+                >
+                  {status.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Assignee */}
+        <div className='space-y-2'>
+          <div className='mt-2 flex items-center gap-1'>
+            <Label htmlFor='assignee'>Assignee</Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info
+                  size={16}
+                  className='cursor-help text-muted-foreground'
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                Select the user assigned to this task.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <Select
+            value={watch('assignee')}
+            onValueChange={(val) =>
+              setValue('assignee', val)
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Select Assignee' />
+            </SelectTrigger>
+            <SelectContent>
+              {users.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.name ?? user.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.assignee && (
+            <p className='text-sm text-red-500'>
+              {errors.assignee.message}
+            </p>
+          )}
+        </div>
+
+        {/* Title */}
+        <div className='col-span-3 space-y-2'>
           <div className='flex items-center gap-1'>
             <Label htmlFor='title'>Title</Label>
             <Tooltip>
@@ -103,7 +231,7 @@ export const TaskForm = ({
         </div>
 
         {/* Description */}
-        <div className='space-y-2'>
+        <div className='col-span-3 space-y-2'>
           <Label htmlFor='description'>Description</Label>
           <Textarea
             id='description'
@@ -118,66 +246,62 @@ export const TaskForm = ({
         </div>
 
         {/* Priority + Tag */}
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <div className='space-y-2'>
-            <Label htmlFor='priority'>Priority</Label>
-            <Select
-              value={watch('priority')}
-              onValueChange={(value) =>
-                setValue(
-                  'priority',
-                  value as TaskFormValues['priority'],
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder='Select Priority' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='Low'>Low</SelectItem>
-                <SelectItem value='Medium'>
-                  Medium
-                </SelectItem>
-                <SelectItem value='High'>High</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.priority && (
-              <p className='text-sm text-red-500'>
-                {errors.priority.message}
-              </p>
-            )}
-          </div>
+        <div className='space-y-2'>
+          <Label htmlFor='priority'>Priority</Label>
+          <Select
+            value={watch('priority')}
+            onValueChange={(value) =>
+              setValue(
+                'priority',
+                value as TaskFormValues['priority'],
+              )
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Select Priority' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='Low'>Low</SelectItem>
+              <SelectItem value='Medium'>Medium</SelectItem>
+              <SelectItem value='High'>High</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.priority && (
+            <p className='text-sm text-red-500'>
+              {errors.priority.message}
+            </p>
+          )}
+        </div>
 
-          <div className='space-y-2'>
-            <Label htmlFor='tag'>Tag</Label>
-            <Select
-              value={watch('tag')}
-              onValueChange={(value) =>
-                setValue(
-                  'tag',
-                  value as TaskFormValues['tag'],
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder='Select Tag' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='Feature'>
-                  Feature
-                </SelectItem>
-                <SelectItem value='Bug'>Bug</SelectItem>
-                <SelectItem value='Improvement'>
-                  Improvement
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.tag && (
-              <p className='text-sm text-red-500'>
-                {errors.tag.message}
-              </p>
-            )}
-          </div>
+        <div className='space-y-2'>
+          <Label htmlFor='tag'>Tag</Label>
+          <Select
+            value={watch('tag')}
+            onValueChange={(value) =>
+              setValue(
+                'tag',
+                value as TaskFormValues['tag'],
+              )
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Select Tag' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='Feature'>
+                Feature
+              </SelectItem>
+              <SelectItem value='Bug'>Bug</SelectItem>
+              <SelectItem value='Improvement'>
+                Improvement
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.tag && (
+            <p className='text-sm text-red-500'>
+              {errors.tag.message}
+            </p>
+          )}
         </div>
 
         {/* Deadline Date Picker */}
@@ -197,8 +321,7 @@ export const TaskForm = ({
               >
                 <CalendarIcon className='mr-2 h-4 w-4' />
                 {deadline
-                  ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                    format(new Date(deadline), 'PPP p')
+                  ? format(new Date(deadline), 'PPP p')
                   : 'Pick a deadline'}
               </Button>
             </PopoverTrigger>
@@ -215,10 +338,8 @@ export const TaskForm = ({
                   setCalendarOpen(false);
                   setValue(
                     'deadline',
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     date
-                      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                        new Date(date).toISOString()
+                      ? new Date(date).toISOString()
                       : '',
                   );
                 }}
@@ -232,42 +353,12 @@ export const TaskForm = ({
           )}
         </div>
 
-        {/* Assignee */}
-        <div className='space-y-2'>
-          <div className='flex items-center gap-1'>
-            <Label htmlFor='assignee'>
-              Assignee User ID
-            </Label>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info
-                  size={16}
-                  className='cursor-help text-muted-foreground'
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                Enter the user ID of the task assignee.
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <Input
-            id='assignee'
-            placeholder='e.g. usr_12345'
-            {...register('assignee')}
-          />
-          {errors.assignee && (
-            <p className='text-sm text-red-500'>
-              {errors.assignee.message}
-            </p>
-          )}
-        </div>
-
         {/* Submit */}
-        <div className='pt-2'>
+        <div className='col-span-3 flex justify-center pt-2'>
           <Button
             type='submit'
             disabled={isSubmitting}
-            className='w-full transition-all duration-200 hover:shadow-lg'
+            className='transition-all duration-200 hover:shadow-lg md:px-20'
           >
             {isSubmitting ? 'Saving...' : 'Save Task'}
           </Button>

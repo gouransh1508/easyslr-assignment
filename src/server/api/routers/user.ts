@@ -8,6 +8,15 @@ import { TRPCError } from '@trpc/server';
 import { db } from '~/server/db';
 
 export const userRouter = createTRPCRouter({
+  getAllUsers: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+  }),
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {

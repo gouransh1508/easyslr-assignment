@@ -81,18 +81,33 @@ function AuthShowcase() {
           <span>Logged in as {sessionData.user?.name}</span>
         )}
       </p>
-      <button
-        className='rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20'
-        onClick={
-          !sessionData
-            ? () => void signIn()
-            : () => {
-                router.push('/dashboard/tasks');
-              }
-        }
-      >
-        {sessionData ? 'Dashboard' : 'Sign in'}
-      </button>
+      {sessionData ? (
+        <button
+          className='rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20'
+          onClick={() => {
+            router.push('/dashboard/tasks');
+          }}
+        >
+          Dashboard
+        </button>
+      ) : (
+        <div className='flex flex-col gap-4 md:flex-row'>
+          <button
+            className='rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20'
+            onClick={() => void signIn()}
+          >
+            Sign In
+          </button>
+          <button
+            className='rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20'
+            onClick={() => {
+              router.push('/auth/signup');
+            }}
+          >
+            Sign Up
+          </button>
+        </div>
+      )}
     </div>
   );
 }

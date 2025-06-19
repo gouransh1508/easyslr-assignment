@@ -1,9 +1,4 @@
-import {
-  Circle,
-  ListCheck,
-  ListTodo,
-  UserPen,
-} from 'lucide-react';
+import { ListCheck, ListTodo, UserPen } from 'lucide-react';
 
 import {
   Sidebar,
@@ -21,10 +16,25 @@ import {
 export function AppSidebar() {
   const items = [
     {
+      title: 'Projects',
+      subItems: [
+        {
+          title: 'View All Projects',
+          url: '/dashboard/projects',
+          icon: ListTodo,
+        },
+        {
+          title: 'Create Project',
+          url: '/dashboard/projects/create',
+          icon: ListCheck,
+        },
+      ],
+    },
+    {
       title: 'Tasks',
       subItems: [
         {
-          title: 'Tasks List',
+          title: 'View All Tasks',
           url: '/dashboard/tasks',
           icon: ListTodo,
         },

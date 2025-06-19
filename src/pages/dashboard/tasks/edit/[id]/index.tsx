@@ -47,7 +47,7 @@ export default function EditTaskPage() {
   if (!task) return <p>Task not found</p>;
 
   return (
-    <div className='mx-auto max-w-2xl p-6'>
+    <div className='mx-auto'>
       <h1 className='mb-4 text-2xl font-bold'>Edit Task</h1>
       <TaskForm
         defaultValues={{
